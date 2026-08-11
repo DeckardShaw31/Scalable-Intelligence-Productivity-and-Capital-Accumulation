@@ -1,0 +1,5 @@
+metric,annual_multiplier,doubling_months,period,source
+Notable-model training compute,4.4,5.6,Since 2010,Rahman and Owen (2024)
+Frontier-LLM training compute,5.0,5.2,Since 2020,Epoch AI (2026)
+Pre-training compute efficiency,3.0,7.6,Current estimate,Epoch AI (2026)
+AI-chip-stock computing power,3.4,6.8,Current estimate,Epoch AI (2026)
