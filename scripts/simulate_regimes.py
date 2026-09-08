@@ -12,9 +12,9 @@ import numpy as np
 from scipy.integrate import solve_ivp
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[1]
 FIGURE_DIR = ROOT / "figures"
-FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+FIGURE_DIR.mkdir(exist_ok=True)
 
 
 COMMON = {
