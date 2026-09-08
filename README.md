@@ -2,7 +2,8 @@
 
 Replication package and simulation code for the manuscript:
 
-> **Nguyen, N. T.** *"Scalable Intelligence, Productivity, and Capital Accumulation."* *Economics of Innovation and New Technology*.
+> **Nguyen, N. T.** *"Scalable Intelligence, Productivity, and Capital Accumulation."*  
+> *Manuscript under revision at Economics of Innovation and New Technology.*
 
 ---
 
@@ -12,14 +13,15 @@ This repository contains the simulation code, replication scripts, empirical sum
 
 ---
 
-## Requirements
+## Requirements and Tested Environment
 
-The simulation scripts are written in standard Python 3 and require the following scientific computing packages:
+The simulation scripts are written in standard Python 3 and require standard scientific computing packages. The full replication suite was tested and verified under:
 
-- `numpy`
-- `scipy`
-- `matplotlib`
-- `pandas` (for stylized facts compilation)
+- **Python**: `3.13.11` (compatible with standard Python 3.10+)
+- **NumPy**: `2.2.6`
+- **SciPy**: `1.16.3`
+- **Matplotlib**: `3.10.8`
+- **pandas**: `2.3.3` (used by `build_stylized_facts.py`)
 
 Install dependencies via `pip`:
 
@@ -60,7 +62,7 @@ python scripts/simulate_regimes.py
 ```
 
 - **Outputs**: `figures/illustrative-regimes.png` and `figures/illustrative-regimes.pdf` (Figure 2).
-- Simulates illustrative growth trajectories across technological regimes (Solow bottleneck, AK limit, accelerating growth, and congested escape).
+- Simulates three illustrative scenarios: labor complementarity, labor substitution, and strong AI-research feedback with congestion. These finite-horizon simulations do not establish finite-time escape.
 
 ### 3. Sensitivity Analysis
 
@@ -83,6 +85,27 @@ python scripts/build_stylized_facts.py
 
 ---
 
+## Data Dictionary (`data/distribution_feedback_paths.csv`)
+
+The generated simulation dataset records continuous trajectory variables evaluated at 0.05-year steps over $t \in [0, 80]$ (1,601 rows per scenario, 6,404 data rows total):
+
+| Column | Description | Format / Units |
+| :--- | :--- | :--- |
+| `scenario` | Scenario identifier specifying saving propensities ($s_W, s_O$) and transfer rate ($\tau$) | Text string |
+| `time` | Simulation time step | Model years ($0.00$ to $80.00$) |
+| `capital` | Conventional physical capital stock ($K_t$) | Index level ($K_0 = 4.0$) |
+| `compute` | Cognitive compute capital stock ($X_t$) | Index level ($X_0 = 1.0$) |
+| `capability` | Algorithmic AI capability level ($A_t$) | Index level ($A_0 = 1.0$) |
+| `labor` | Human labor supply ($L_t = L_0 e^{nt}$) | Index level ($L_0 = 1.0$) |
+| `output` | Aggregate output ($Y_t$) | Model output units |
+| `saving` | Aggregate saving rate ($s_t$) | **Fraction** ($0$ to $1$) |
+| `labor_share` | Human labor income share ($s_{L,t}$) | **Fraction** ($0$ to $1$) |
+| `output_growth` | Instantaneous annual growth rate of output ($\dot{Y}_t / Y_t$) | **Fraction per year** (e.g., $0.0172 = 1.72\%$) |
+| `consumption_wage` | Aggregate consumption of wage/transfer recipients ($\mathcal{C}_{W,t}$) | Output units |
+| `consumption_capital` | Aggregate consumption of capital owners ($\mathcal{C}_{O,t}$) | Output units |
+
+---
+
 ## Repository Structure
 
 ```text
@@ -99,6 +122,7 @@ python scripts/build_stylized_facts.py
 │   ├── distribution_feedback.py           # Simulates distribution feedback, verifies tolerances, generates Figure 4 & CSV
 │   ├── sensitivity_analysis.py            # Generates sensitivity map (Figure 3)
 │   └── simulate_regimes.py                # Core regime simulation model (Figure 2)
+├── .gitignore                             # Git ignore rules for python cache and local files
 └── README.md                              # Replication documentation and guide
 ```
 
