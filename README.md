@@ -2,7 +2,7 @@
 
 Replication package and simulation code for the manuscript:
 
-> **Nguyen, N. T.** *"Scalable Intelligence, Productivity, and Capital Accumulation."*  
+> *"Scalable Intelligence, Productivity, and Capital Accumulation."*  
 > *Manuscript under revision at Economics of Innovation and New Technology.*
 
 ---
