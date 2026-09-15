@@ -55,7 +55,7 @@ python scripts/distribution_feedback.py
   - **Important Note on Data Format**: In `data/distribution_feedback_paths.csv`, growth rates (such as `output_growth`) and shares (such as `labor_share` and `saving`) are recorded as **fractions**, not percentages (e.g., $0.02$ represents $2\%$).
   - **Disclaimer**: These exercises use synthetic, illustrative scenarios designed to isolate analytical mechanisms and comparative dynamics—they are not empirical estimates, econometric forecasts, or policy recommendations.
 
-### 2. Transition Robustness Table (Section 11.5, Table 1)
+### 2. Transition Robustness Table (Section 11.5, Table 2)
 
 ```bash
 python scripts/feedback_robustness.py
@@ -65,7 +65,7 @@ python scripts/feedback_robustness.py
 - **Outputs**:
   - Summary dataset: `data/feedback_robustness_summary.csv` (and identical `data/feedback_robustness_summary.txt`, 16 rows)
 - **Methodology & Interpretation**:
-  - Reproduces the compact transition robustness analysis in Table 1 (Section 11.5).
+  - Reproduces the compact transition robustness analysis in Table 2 (Section 11.5).
   - Compares all 16 combinations of four transfer rates ($\tau \in \{0.0, 0.3, 0.6, 0.9\}$), two saving-propensity pairs ($(s_W, s_O) \in \{(0.15, 0.40), (0.25, 0.30)\}$), and two capability-feedback exponents ($\lambda \in \{0.15, 0.70\}$ with $\phi = 0.30$).
   - Evaluates terminal outcomes at year 80 (1,601 evaluation dates each) starting from common initial stocks ($K_0 = 4$, $X_0 = A_0 = L_0 = 1$, $\sigma = 2$, $\beta = 9/17$).
   - Verifies solver convergence to relative tolerance $10^{-9}$ (checked against $10^{-11}$), interior growth derivative errors ($< 1.1 \times 10^{-7}$), equal-propensity invariance across transfer rates, and the complementary unequal-depreciation capital ratio formula $\frac{\beta}{1-\beta}\frac{n+\delta_X}{n+\delta_K}$.
@@ -124,7 +124,7 @@ The continuous trajectory simulation dataset evaluated at 0.05-year steps over $
 
 ### 2. `data/feedback_robustness_summary.csv`
 
-Terminal transition outcomes evaluated at model year $t = 80$ for Table 1 across all 16 robustness cases:
+Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across all 16 robustness cases:
 
 | Column | Description | Format / Units |
 | :--- | :--- | :--- |
@@ -141,7 +141,7 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 1 across
 | `output` | Terminal aggregate output ($Y_{80}$) | Model output units |
 | `saving` | Terminal aggregate saving rate ($s_{80}$) | **Fraction** ($0$ to $1$) |
 | `labor_share` | Terminal labor income share ($s_{L,80}$) | **Fraction** ($0$ to $1$) |
-| `output_growth` | Instantaneous annual output growth rate ($\dot{Y}_{80}/Y_{80}$) | **Fraction per year** (multiply by 100 for Table 1 %) |
+| `output_growth` | Instantaneous annual output growth rate ($\dot{Y}_{80}/Y_{80}$) | **Fraction per year** (multiply by 100 for Table 2 %) |
 
 *Note: For environments where CSV downloads are constrained, `data/feedback_robustness_summary.txt` provides an identical comma-separated text representation.*
 
@@ -152,7 +152,7 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 1 across
 ```text
 ├── data/
 │   ├── distribution_feedback_paths.csv     # Generated simulation paths (4 scenarios, 6,404 rows)
-│   ├── feedback_robustness_summary.csv     # Terminal transition outcomes for Table 1 (16 rows)
+│   ├── feedback_robustness_summary.csv     # Terminal transition outcomes for Table 2 (16 rows)
 │   ├── feedback_robustness_summary.txt     # Identical comma-separated alternative
 │   └── source_reported_ai_scaling.csv      # Source-reported AI training and inference scaling trends
 ├── figures/
@@ -163,7 +163,7 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 1 across
 ├── scripts/
 │   ├── build_stylized_facts.py              # Generates Figure 1 from reported scaling data
 │   ├── distribution_feedback.py             # Simulates distribution feedback, verifies tolerances, generates Figure 4 & CSV
-│   ├── feedback_robustness.py               # Reproduces Table 1 transition robustness summary & checks
+│   ├── feedback_robustness.py               # Reproduces Table 2 transition robustness summary & checks
 │   ├── sensitivity_analysis.py              # Generates sensitivity map (Figure 3)
 │   └── simulate_regimes.py                  # Core regime simulation model (Figure 2)
 ├── .gitignore                               # Git ignore rules for python cache and local files
@@ -179,6 +179,6 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 1 across
 2. **Accounting balance**: $\mathcal{C}_W + \mathcal{C}_O + sY = Y$ verified at every evaluation date.
 3. **Factor share bounds**: $s_{L,t} \in [0, 1 - \alpha]$ and aggregate saving bounded by the convex combination of saving propensities.
 4. **Analytical derivative consistency**: Analytical growth $\dot{Y}/Y$ matches numerical centered differences of $\log(Y)$ within $2 \times 10^{-5}$ along all paths (and $< 1.1 \times 10^{-7}$ in the robustness table).
-5. **Tolerance convergence**: Solutions remain invariant to within $< 2 \times 10^{-9}$ when relative tolerance is tightened from $10^{-9}$ to $10^{-11}$.
+5. **Tolerance convergence**: Solutions remain invariant to within $< 3 \times 10^{-9}$ for Figure 4 and $< 2 \times 10^{-9}$ for Table 2 when relative tolerance is tightened from $10^{-9}$ to $10^{-11}$.
 6. **Equal-propensity invariance**: Redistribution across transfer rates produces identical aggregate paths when $s_W = s_O$ (verified to relative error $< 10^{-8}$).
 7. **Limiting analytical checks**: Complementary bottleneck steady-state ratios and large-stock policy threshold directions match analytical formulas.
