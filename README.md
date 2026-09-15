@@ -75,7 +75,7 @@ python scripts/feedback_robustness.py
   - Reproduces the compact transition robustness analysis in Table 2 (Section 11.5).
   - Compares all 16 combinations of four transfer rates ($\tau \in \{0.0, 0.3, 0.6, 0.9\}$), two saving-propensity pairs ($(s_W, s_O) \in \{(0.15, 0.40), (0.25, 0.30)\}$), and two capability-feedback exponents ($\lambda \in \{0.15, 0.70\}$ with $\phi = 0.30$).
   - Evaluates terminal outcomes at year 80 (1,601 evaluation dates each) starting from common initial stocks ($K_0 = 4$, $X_0 = A_0 = L_0 = 1$, $\sigma = 2$, $\beta = 9/17$).
-  - Verifies solver convergence to relative tolerance $10^{-9}$ (checked against $10^{-11}$), interior growth derivative errors ($< 1.1 \times 10^{-7}$), equal-propensity invariance across transfer rates, and the complementary unequal-depreciation capital ratio formula $\frac{\beta}{1-\beta}\frac{n+\delta_X}{n+\delta_K}$.
+  - Uses solver relative tolerance $10^{-9}$, with convergence assessed against a tighter $10^{-11}$ run; verifies interior growth derivative errors ($< 1.1 \times 10^{-7}$), equal-propensity invariance across transfer rates, and the complementary unequal-depreciation capital ratio formula $\frac{\beta}{1-\beta}\frac{n+\delta_X}{n+\delta_K}$.
   - **Disclaimer**: These exercises illustrate finite-horizon feedback mechanisms, not calibrated forecasts or asymptotic regime switches.
 
 ### 3. Baseline Regimes Simulation
@@ -140,8 +140,8 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across
 | `research_case` | Research feedback regime (`baseline` with $\lambda=0.15$ or `higher_capability_feedback` with $\lambda=0.70$) | Text string |
 | `lam` | Capability-feedback exponent in research ($\lambda$) | Float (`0.15` or `0.70`) |
 | `phi` | Effective-research-input exponent ($\phi$) | Float (`0.30`) |
-| `saving_wage` | Saving propensity of wage/transfer recipients ($s_W$) | Float (`0.15` or `0.25`) |
-| `saving_capital` | Saving propensity of capital owners ($s_O$) | Float (`0.40` or `0.30`) |
+| `saving_wage` | Saving propensity attached to the wage/transfer income account ($s_W$) | Float (`0.15` or `0.25`) |
+| `saving_capital` | Saving propensity attached to the capital-income account ($s_O$) | Float (`0.40` or `0.30`) |
 | `transfer` | Nonlabor gross income transfer fraction ($\tau$) | Float (`0.0`, `0.3`, `0.6`, `0.9`) |
 | `time` | Evaluation time horizon | Model years (`80.0`) |
 | `capital` | Terminal conventional physical capital stock ($K_{80}$) | Model index level |
