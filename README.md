@@ -15,13 +15,20 @@ This repository contains the simulation code, replication scripts, empirical sum
 
 ## Requirements and Tested Environment
 
-The simulation scripts are written in standard Python 3 and require standard scientific computing packages. The full replication suite was tested and verified under:
+The simulation scripts are written in standard Python 3 and require standard scientific computing packages. The full replication suite was originally tested and verified under:
 
 - **Python**: `3.13.11` (compatible with standard Python 3.10+)
 - **NumPy**: `2.2.6`
 - **SciPy**: `1.16.3`
 - **Matplotlib**: `3.10.8`
 - **pandas**: `2.3.3` (used by `build_stylized_facts.py`)
+
+Additional successful validation environment:
+- **Python**: `3.13.15`
+- **NumPy**: `2.4.1`
+- **SciPy**: `1.17.0`
+- **Matplotlib**: `3.10.8`
+- **pandas**: `2.3.3`
 
 Install dependencies via `pip`:
 
@@ -119,8 +126,10 @@ The continuous trajectory simulation dataset evaluated at 0.05-year steps over $
 | `saving` | Aggregate saving rate ($s_t$) | **Fraction** ($0$ to $1$) |
 | `labor_share` | Human labor income share ($s_{L,t}$) | **Fraction** ($0$ to $1$) |
 | `output_growth` | Instantaneous annual growth rate of output ($\dot{Y}_t / Y_t$) | **Fraction per year** (e.g., $0.0172 = 1.72\%$) |
-| `consumption_wage` | Aggregate consumption of wage/transfer recipients ($\mathcal{C}_{W,t}$) | Output units |
-| `consumption_capital` | Aggregate consumption of capital owners ($\mathcal{C}_{O,t}$) | Output units |
+| `consumption_wage` | Aggregate consumption from the wage/transfer income account ($\mathcal{C}_{W,t}$) | Output units |
+| `consumption_capital` | Aggregate consumption from the capital-income account ($\mathcal{C}_{O,t}$) | Output units |
+
+*Note: In accordance with the manuscript's income-account framework, `consumption_wage` and `consumption_capital` record consumption flows allocated from the wage/transfer and capital-income accounts rather than distinct household classes.*
 
 ### 2. `data/feedback_robustness_summary.csv`
 
@@ -175,10 +184,10 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across
 ## Validation and Numerical Checks
 
 `scripts/distribution_feedback.py` and `scripts/feedback_robustness.py` perform automated internal validation checks:
-1. **Positivity and finite values**: Guaranteed across all simulated stocks ($K, X, A, L, Y$).
+1. **Positivity and finite values**: Checked at all evaluation dates in the reported simulations across all simulated stocks ($K, X, A, L, Y$).
 2. **Accounting balance**: $\mathcal{C}_W + \mathcal{C}_O + sY = Y$ verified at every evaluation date.
 3. **Factor share bounds**: $s_{L,t} \in [0, 1 - \alpha]$ and aggregate saving bounded by the convex combination of saving propensities.
 4. **Analytical derivative consistency**: Analytical growth $\dot{Y}/Y$ matches numerical centered differences of $\log(Y)$ within $2 \times 10^{-5}$ along all paths (and $< 1.1 \times 10^{-7}$ in the robustness table).
-5. **Tolerance convergence**: Solutions remain invariant to within $< 3 \times 10^{-9}$ for Figure 4 and $< 2 \times 10^{-9}$ for Table 2 when relative tolerance is tightened from $10^{-9}$ to $10^{-11}$.
+5. **Tolerance convergence**: Solutions remain invariant to within $< 3 \times 10^{-9}$ for Figure 4 and $< 2 \times 10^{-9}$ for Table 2 when relative tolerance is tightened from $10^{-9}$ to $10^{-11}$ (observed rerun maxima are approximately $2.29 \times 10^{-9}$ and $1.50 \times 10^{-9}$, respectively).
 6. **Equal-propensity invariance**: Redistribution across transfer rates produces identical aggregate paths when $s_W = s_O$ (verified to relative error $< 10^{-8}$).
 7. **Limiting analytical checks**: Complementary bottleneck steady-state ratios and large-stock policy threshold directions match analytical formulas.
