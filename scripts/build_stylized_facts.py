@@ -12,7 +12,7 @@ import numpy as np
 import pandas as pd
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[1]
 DATA = ROOT / "data" / "source_reported_ai_scaling.csv"
 FIGURE_DIR = ROOT / "figures"
 
@@ -57,7 +57,7 @@ def main():
         )
 
     ax.set_title("Selected source-reported AI scaling trends")
-    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    FIGURE_DIR.mkdir(exist_ok=True)
     fig.savefig(FIGURE_DIR / "ai-scaling-facts.pdf", bbox_inches="tight")
     fig.savefig(FIGURE_DIR / "ai-scaling-facts.png", dpi=220, bbox_inches="tight")
     print(data.to_string(index=False))

@@ -6,27 +6,19 @@ productivity. They are robustness exercises, not estimates or forecasts.
 
 from pathlib import Path
 import importlib.util
-import sys
 
 import matplotlib.pyplot as plt
 import numpy as np
 
 
-ROOT = Path(__file__).resolve().parent.parent
+ROOT = Path(__file__).resolve().parents[1]
 FIGURE_DIR = ROOT / "figures"
-SCRIPTS_DIR = ROOT / "scripts"
 
-if str(SCRIPTS_DIR) not in sys.path:
-    sys.path.insert(0, str(SCRIPTS_DIR))
-
-try:
-    import simulate_regimes as model
-except ImportError:
-    spec = importlib.util.spec_from_file_location(
-        "simulate_regimes", SCRIPTS_DIR / "simulate_regimes.py"
-    )
-    model = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(model)
+spec = importlib.util.spec_from_file_location(
+    "simulate_regimes", ROOT / "scripts" / "simulate_regimes.py"
+)
+model = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(model)
 
 
 def main():
@@ -90,7 +82,7 @@ def main():
         ax.set_xlabel("Elasticity of substitution, $\\sigma$")
         ax.set_ylabel("Research-productivity multiplier")
 
-    FIGURE_DIR.mkdir(parents=True, exist_ok=True)
+    FIGURE_DIR.mkdir(exist_ok=True)
     fig.savefig(FIGURE_DIR / "sensitivity-map.pdf", bbox_inches="tight")
     fig.savefig(FIGURE_DIR / "sensitivity-map.png", dpi=220, bbox_inches="tight")
 
