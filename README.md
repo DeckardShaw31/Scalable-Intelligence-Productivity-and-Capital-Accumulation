@@ -62,7 +62,7 @@ python scripts/distribution_feedback.py
   - **Important Note on Data Format**: In `data/distribution_feedback_paths.csv`, growth rates (such as `output_growth`) and shares (such as `labor_share` and `saving`) are recorded as **fractions**, not percentages (e.g., $0.02$ represents $2\%$).
   - **Disclaimer**: These exercises use synthetic, illustrative scenarios designed to isolate analytical mechanisms and comparative dynamics—they are not empirical estimates, econometric forecasts, or policy recommendations.
 
-### 2. Transition Robustness Table (Section 11.5, Table 2)
+### 2. Transition Robustness Table (Section 5.2.5, Table 2)
 
 ```bash
 python scripts/feedback_robustness.py
@@ -72,7 +72,7 @@ python scripts/feedback_robustness.py
 - **Outputs**:
   - Summary dataset: `data/feedback_robustness_summary.csv` (and identical `data/feedback_robustness_summary.txt`, 16 rows)
 - **Methodology & Interpretation**:
-  - Reproduces the compact transition robustness analysis in Table 2 (Section 11.5).
+  - Reproduces the compact transition robustness analysis in Table 2 (Section 5.2.5).
   - Compares all 16 combinations of four transfer rates ($\tau \in \{0.0, 0.3, 0.6, 0.9\}$), two saving-propensity pairs ($(s_W, s_O) \in \{(0.15, 0.40), (0.25, 0.30)\}$), and two capability-feedback exponents ($\lambda \in \{0.15, 0.70\}$ with $\phi = 0.30$).
   - Evaluates terminal outcomes at year 80 (1,601 evaluation dates each) starting from common initial stocks ($K_0 = 4$, $X_0 = A_0 = L_0 = 1$, $\sigma = 2$, $\beta = 9/17$).
   - Uses solver relative tolerance $10^{-9}$, with convergence assessed against a tighter $10^{-11}$ run; verifies interior growth derivative errors ($< 1.1 \times 10^{-7}$), equal-propensity invariance across transfer rates, and the complementary unequal-depreciation capital ratio formula $\frac{\beta}{1-\beta}\frac{n+\delta_X}{n+\delta_K}$.
@@ -85,7 +85,7 @@ python scripts/simulate_regimes.py
 ```
 
 - **Outputs**: `figures/illustrative-regimes.png` and `figures/illustrative-regimes.pdf` (Figure 2).
-- Simulates three illustrative scenarios: labor complementarity, labor substitution, and strong AI-research feedback with congestion. These finite-horizon simulations do not establish finite-time escape.
+- Simulates three illustrative scenarios: labor complementarity, labor substitution, and strong AI-research feedback with congestion over an 80-year horizon. The continuation of these paths to finite-time escape is computed by `scripts/escape_scaling.py` (Section 6 below).
 
 ### 4. Sensitivity Analysis
 
@@ -105,6 +105,24 @@ python scripts/build_stylized_facts.py
 - **Inputs**: `data/source_reported_ai_scaling.csv`
 - **Outputs**: `figures/ai-scaling-facts.png` and `figures/ai-scaling-facts.pdf` (Figure 1).
 - Compiles published headline scaling metrics and citations into summary visualizations.
+
+### 6. Endogenous Scaling and Escape Timing (Section 4.3, Proposition 6, Corollary 1, Proposition 10, Table 3)
+
+```bash
+python scripts/escape_scaling.py
+```
+
+- **Requirements**: NumPy and SciPy (imports parameters from `simulate_regimes.py` and `distribution_feedback.py`).
+- **Outputs**: `data/escape_scaling_summary.csv` (16 rows) and a printed summary.
+- **Methodology**:
+  - Integrates the full benchmark system, and the distribution-sensitive saving extension with active research, entirely in logarithms. Because capability is strictly increasing, it uses $\log A$ as the independent variable and carries calendar time as a state, so a finite-time escape appears as a finite limit of $t(\log A)$.
+  - Escape year: first date with $\log A = 40$; the script asserts that the date at $\log A = 60$ differs by less than $10^{-3}$ years.
+  - Tolerances: relative $10^{-10}$, absolute $10^{-12}$.
+- **Assertions** (the script fails loudly if any check is violated):
+  - Substitution scenarios: $d\log X/d\log A$ within 0.2% of $\mu^* = (2-\alpha-\lambda-\phi+\hat q)/\phi$, $K/X$ within 0.2% of $s_K/s_X$, and $g_A/A^{1-\alpha}$ within 0.5% of $b\,s_K^\alpha s_X^{1-\alpha}/\mu^*$ (Proposition 6).
+  - Bottleneck scenario: $g_A$ and $d\log X/d\log A$ within 2% of $\phi n/(-\eta)$ and $\mu_c = -\eta/\phi$.
+  - Distribution-sensitive saving: escape for every transfer rate $\tau \in \{0, 0.3, 0.6, 0.9, 1\}$, and equal-propensity escape dates identical across transfer rates (Proposition 10, Table 3).
+  - Essential input in compute services, $\Phi(X,E) = [X^{-1} + E^{-1}]^{-1}$ with $E_0 = 50$, $n_E = 0$: the strong-feedback path stays finite through year 3,000 with capability growth below $\phi\bar n/(-\eta)$ when $q = 1$, and escapes when $q = 0.2$ (Corollary 1).
 
 ---
 
@@ -154,6 +172,24 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across
 
 *Note: For environments where CSV downloads are constrained, `data/feedback_robustness_summary.txt` provides an identical comma-separated text representation.*
 
+### 3. `data/escape_scaling_summary.csv`
+
+One row per checked case (Figure 2 scenarios, Table 3 transfer rates, and the Corollary 1 cases). Cells are empty where a column does not apply to a case.
+
+| Column | Description | Format / Units |
+| :--- | :--- | :--- |
+| `case` | Scenario or research specification | Text string |
+| `saving` | Saving rule (`fixed` or `distribution`) | Text string |
+| `transfer` | Transfer rate $\tau$ (distribution-sensitive saving only) | Float |
+| `mu_predicted` | Analytical exponent: $\mu^*$ (substitution) or $\mu_c$ (bottleneck) | Float |
+| `mu_simulated` | Simulated $d\log X/d\log A$ at $\log A = 40$ (or $60$ in the bottleneck case) | Float |
+| `escape_year` | First date with $\log A = 40$, or `none` | Model years |
+| `year_log_a_12` | First date with $\log A = 12$, used for remaining-time ratios | Model years |
+| `growth_coefficient` | Simulated $g_A/A^{1-\alpha}$ at $\log A = 40$ | Float |
+| `growth_coefficient_predicted` | Analytical $b\,s_K^\alpha s_X^{1-\alpha}/\mu^*$ | Float |
+| `capability_growth_year_3000` | Capability growth $g_A$ at year 3,000 (essential-input case) | **Fraction per year** |
+| `capability_growth_bound` | Corollary 1 bound $\phi\bar n/(-\eta)$ | **Fraction per year** |
+
 ---
 
 ## Repository Structure
@@ -161,6 +197,7 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across
 ```text
 ├── data/
 │   ├── distribution_feedback_paths.csv     # Generated simulation paths (4 scenarios, 6,404 rows)
+│   ├── escape_scaling_summary.csv          # Scaling, escape-timing, and Corollary 1 checks (16 rows)
 │   ├── feedback_robustness_summary.csv     # Terminal transition outcomes for Table 2 (16 rows)
 │   ├── feedback_robustness_summary.txt     # Identical comma-separated alternative
 │   └── source_reported_ai_scaling.csv      # Source-reported AI training and inference scaling trends
@@ -172,6 +209,7 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across
 ├── scripts/
 │   ├── build_stylized_facts.py              # Generates Figure 1 from reported scaling data
 │   ├── distribution_feedback.py             # Simulates distribution feedback, verifies tolerances, generates Figure 4 & CSV
+│   ├── escape_scaling.py                    # Checks Proposition 6, Corollary 1, Proposition 10; Table 3
 │   ├── feedback_robustness.py               # Reproduces Table 2 transition robustness summary & checks
 │   ├── sensitivity_analysis.py              # Generates sensitivity map (Figure 3)
 │   └── simulate_regimes.py                  # Core regime simulation model (Figure 2)
@@ -191,3 +229,4 @@ Terminal transition outcomes evaluated at model year $t = 80$ for Table 2 across
 5. **Tolerance convergence**: Solutions remain invariant to within $< 3 \times 10^{-9}$ for Figure 4 and $< 2 \times 10^{-9}$ for Table 2 when relative tolerance is tightened from $10^{-9}$ to $10^{-11}$ (observed rerun maxima are approximately $2.29 \times 10^{-9}$ and $1.50 \times 10^{-9}$, respectively).
 6. **Equal-propensity invariance**: Redistribution across transfer rates produces identical aggregate paths when $s_W = s_O$ (verified to relative error $< 10^{-8}$).
 7. **Limiting analytical checks**: Complementary bottleneck steady-state ratios and large-stock policy threshold directions match analytical formulas.
+8. **Scaling and escape checks** (`scripts/escape_scaling.py`): derived exponents, capital-ratio limits, capability-growth coefficients, escape-timing ratios, and the Corollary 1 cases match their analytical predictions (see Section 6 of the replication instructions).
